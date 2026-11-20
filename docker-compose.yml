@@ -1,0 +1,25 @@
+# Qdrant (vector database) always starts.
+# MySQL starts only with:  docker compose --profile db up -d
+# (skip the profile if you already run MySQL locally).
+services:
+  qdrant:
+    image: qdrant/qdrant:v1.12.4
+    ports:
+      - "6333:6333"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  mysql:
+    image: mysql:8.0
+    profiles: ["db"]
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3307:3306"
+    volumes:
+      - ./database/vulntrace_complete.sql:/docker-entrypoint-initdb.d/01-vulntrace.sql:ro
+      - mysql_data:/var/lib/mysql
+
+volumes:
+  qdrant_data:
+  mysql_data:
